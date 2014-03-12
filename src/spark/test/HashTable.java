@@ -299,7 +299,7 @@ public class HashTable<T> implements Serializable{
 				
 				if(tmp.getCount() - tmp.getEpsilon() < Math.ceil(my_phi * m_table.getTotalCount()))
 				{
-					System.out.println("No longer guaranteed");
+				    //	System.out.println("No longer guaranteed");
 					guaranteed = false;
 				}
 			}
