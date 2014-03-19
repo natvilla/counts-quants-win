@@ -6,6 +6,7 @@ package random_ArasuManku_Window;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -33,7 +34,7 @@ public class random_ArasuManku_Window {
 		m_W          = W;
 		m_epsilon    = epsilon;
 		m_delta      = delta;
-		m_r          = (int) log(0.0 + m_W / ( 1.0 / m_epsilon * log(1.0 / (m_epsilon + m_delta), 2)), 2);
+		m_r          = (int) Math.max(log(0.0 + m_W / ( 1.0 / m_epsilon * log(1.0 / (m_epsilon + m_delta), 2)), 2), 0);
 		m_blockSize = (int) Math.pow(2, m_r);
 		
 		m_insertedElements = 0;
@@ -75,18 +76,18 @@ public class random_ArasuManku_Window {
 		{
 			Sticky_Triple<String> to_insert = new Sticky_Triple<String>(e, m_insertedElements);
 			
-			m_trackedElements += 1;
-			// TODO: account for overflow
-			
 			// insert the element into the table
 			m_summery.set(m_trackedElements, to_insert);
 			// insert the element into the lookup hash table
-			if(!m_lookup.contains(e))
+			if(!m_lookup.containsKey(e))
 			{
 				// create a new linked list if necessary
 				m_lookup.put(e, new LinkedList<Sticky_Triple<String>>());				
 			}
 			m_lookup.get(e).addFirst(to_insert);
+			
+			// TODO: account for overflow			
+			m_trackedElements += 1;
 			
 			return true;
 		}
@@ -108,6 +109,44 @@ public class random_ArasuManku_Window {
 		}
 		
 		m_insertedElements++;
+	}
+	
+	public int query(String e, int min_idx, int max_idx)
+	{
+		if(min_idx >= max_idx)
+			return 0;
+		
+		int count = 0;
+		if(m_lookup.containsKey(e))
+		{
+			int last_insertion = m_insertedElements;
+			Sticky_Triple<String> current_element;
+			Iterator<Sticky_Triple<String>> itr = m_lookup.get(e).iterator();
+			current_element = itr.next();
+			while(current_element.get_i() > max_idx && itr.hasNext())
+			{
+				last_insertion = current_element.get_i();
+				current_element = itr.next();
+			}
+			
+			count += current_element.get_f();			
+			
+			// estimate the number of elements in the upper section of the range
+			// (here I assume an even distribution of elements in the range
+			count -= (int) ((0.0 + last_insertion - max_idx) * current_element.get_f() / (last_insertion - current_element.get_i()));
+			
+			// until we reach the other side, we can just keep adding the elements to count
+			while(current_element.get_i() > min_idx && itr.hasNext())
+			{
+				last_insertion = current_element.get_i();
+				current_element = itr.next();
+				count += current_element.get_f();
+			}
+			
+			count -= (int) ((0.0 + min_idx - current_element.get_i()) * current_element.get_f() / (last_insertion - current_element.get_i()));
+		}
+		
+		return count;
 	}
 	
 }
