@@ -46,23 +46,20 @@ public class TwitterParser {
 			e.printStackTrace();
 		}
 		
-		String filtered_string = this.removeAll(split1[2], ".,:;\'\"<!?[]{}()/\\");
+		//String filtered_string = this.removeAll(split1[2], ".,:;\'\"<!?[]{}()/\\");
+		String filtered_string = split1[2].replaceAll("[-]", " ");
+		       filtered_string = filtered_string.replaceAll("[\\W&&[^ #]]", "");
 		String[] split2 = filtered_string.split(" ");
 		
 		for(String word : split2)
 		{
-			if(!StopListDictionary.s_query(word))
+			String potential_insert = word.toLowerCase();
+			
+			if(!StopListDictionary.s_query(potential_insert))
 			{
-				m_tweetWords.add(word);
+				m_tweetWords.add(potential_insert);
 			}
 		}
-	}
-	
-	private String removeAll(String original_string, String chars_to_remove)
-	{
-		for(int i=0; i<chars_to_remove.length(); i++)
-			original_string = original_string.replaceAll("" + chars_to_remove.charAt(i), "");
-		return original_string;
 	}
 	
 	public Date get_date()

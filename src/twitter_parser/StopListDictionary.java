@@ -19,6 +19,7 @@ public class StopListDictionary {
 	
 	private HashSet<String> m_dictionary;
 	private LinkedList<String> m_prefixDictionary;
+	private int m_min_sting_length;
 	
 	static public StopListDictionary get_instance()
 	{
@@ -34,6 +35,9 @@ public class StopListDictionary {
 	
 	private StopListDictionary()
 	{
+		// if it is less then this length it will be stopped
+		m_min_sting_length = 3;
+		
 		m_prefixDictionary = new LinkedList<String>();
 		
 		m_prefixDictionary.add("http");
@@ -44,12 +48,15 @@ public class StopListDictionary {
 		String[] stopListWords = stopList.split(",");
 		
 		for(String word : stopListWords)
-			m_dictionary.add(word);		
+			m_dictionary.add(word);
 	}
 	
 	// returns true if it is in the stop list
 	public Boolean query(String s)
 	{
+		if(s.length() < m_min_sting_length)
+			return true;
+		
 		if(m_dictionary.contains(s)) return true;
 		
 		for(String prefix : m_prefixDictionary)
