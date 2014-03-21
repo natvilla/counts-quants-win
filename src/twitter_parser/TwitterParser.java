@@ -14,6 +14,11 @@ import java.util.Date;
  * and the twitter will be cleaned of unnecessary punctuation and symbols.  Also,
  * the tweets will be in a string array where each word is an element of the array.
  * 
+ * To use the parser, give the entire line of the tweet to the constructor. To get
+ * the interesting related contents from the tweet us the appropriate getters.  The
+ * list of interesting words and hash tags can get retrieved from the ArrayList<String>
+ * returned by get_words()
+ * 
  */
 
 
