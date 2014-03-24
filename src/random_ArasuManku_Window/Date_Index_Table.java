@@ -2,6 +2,7 @@ package random_ArasuManku_Window;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 /*
  * This table is used to keep track of what indexes are aligned with which time
@@ -67,5 +68,14 @@ public class Date_Index_Table {
 			return Math.max(first, upto);
 		else
 			return Math.min(first, upto);
+	}
+	
+	public void dump_all_Recorded_Dates()
+	{
+		for(Date_Index_Elem e : m_data)
+		{
+			if(e != null)
+				System.out.println( "" + e.m_date.toString());
+		}
 	}
 }

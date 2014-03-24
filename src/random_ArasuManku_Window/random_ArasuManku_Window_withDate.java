@@ -54,9 +54,17 @@ public class random_ArasuManku_Window_withDate extends random_ArasuManku_Window 
 	
 	public int query(String item, Date startDate, Date endDate)
 	{
+		if(m_dateTable == null)
+			return 0;
+		
 		int lower = m_dateTable.find_lower(startDate);
 		int upper = m_dateTable.find_upper(endDate);
 		
 		return this.query(item, lower, upper);
+	}
+	
+	public void dumpDebug()
+	{
+		m_dateTable.dump_all_Recorded_Dates();
 	}
 }
