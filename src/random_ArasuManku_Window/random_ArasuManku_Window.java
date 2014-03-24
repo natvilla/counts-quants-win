@@ -5,6 +5,7 @@ package random_ArasuManku_Window;
  */
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -94,6 +95,17 @@ public class random_ArasuManku_Window {
 		return false;
 	}
 	
+	// insert several elements into the data structure in the order
+	// they appear in the enumeration
+	public void insert(Enumeration<String> e)
+	{
+		while(e.hasMoreElements())
+		{
+			this.insert(e.nextElement());
+		}			
+	}
+	
+	// insert a single element into the data structure
 	public void insert(String e)
 	{
 		// check to see if it is inserted as a sample.  If so we have already
@@ -102,7 +114,7 @@ public class random_ArasuManku_Window {
 		{
 			// if the item exists in the lookup table, we should increase the frequency
 			// of the most recently sampled item
-			if(m_lookup.contains(e))
+			if(m_lookup.containsKey(e))
 			{
 				m_lookup.get(e).getFirst().incr_f();
 			}
@@ -149,4 +161,13 @@ public class random_ArasuManku_Window {
 		return count;
 	}
 	
+	public int get_insertedElements()
+	{
+		return m_insertedElements;
+	}
+	
+	public Enumeration<String> get_all_tracked()
+	{
+		return m_lookup.keys();
+	}
 }
