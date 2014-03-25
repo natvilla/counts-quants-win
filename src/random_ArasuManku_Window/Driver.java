@@ -47,6 +47,7 @@ public class Driver {
 				s_query = in.nextLine();
 			}
 			
+			in.close();
 			reader.close();
 		}
 		catch(Exception e)

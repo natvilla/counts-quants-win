@@ -19,12 +19,10 @@ public class random_ArasuManku_Window {
 	private final int m_blockSize;
 	
 	private int m_insertedElements;  // the number of elements which have entered by calling 'insert'
-	private int m_trackedElements;   // the edge of the used slots when looking in the array m_summery
+	private int m_trackedElementCount;   // the edge of the used slots when looking in the array m_summery
 	private int m_nextSampleIndex;   // the index of the next item which will be sampled
 	
 	private Random m_rgen;
-	
-	private boolean debug_flag;
 	
 	private ArrayList<Sticky_Triple<String>> m_summery;
 	
@@ -36,7 +34,7 @@ public class random_ArasuManku_Window {
 		m_epsilon    = epsilon;
 		m_delta      = delta;
 		m_r          = (int) Math.max(log(0.0 + m_W / ( 1.0 / m_epsilon * log(1.0 / (m_epsilon + m_delta), 2)), 2), 0);
-		m_blockSize = (int) Math.pow(2, m_r);
+		m_blockSize  = (int) Math.pow(2, m_r);
 		
 		m_insertedElements = 0;
 		
@@ -51,8 +49,6 @@ public class random_ArasuManku_Window {
 		
 		// create the array with slightly more capacity then we will ever need
 		m_lookup = new Hashtable<String, LinkedList<Sticky_Triple<String>>>((int) (max_elements * 1.25));
-		
-		debug_flag = false;
 	}
 	
 	private static double log(double x, double base)
@@ -78,7 +74,7 @@ public class random_ArasuManku_Window {
 			Sticky_Triple<String> to_insert = new Sticky_Triple<String>(e, m_insertedElements);
 			
 			// insert the element into the table
-			m_summery.set(m_trackedElements, to_insert);
+			place_item(to_insert);
 			// insert the element into the lookup hash table
 			if(!m_lookup.containsKey(e))
 			{
@@ -87,12 +83,20 @@ public class random_ArasuManku_Window {
 			}
 			m_lookup.get(e).addFirst(to_insert);
 			
-			// TODO: account for overflow			
-			m_trackedElements += 1;
+			m_trackedElementCount += 1;
 			
 			return true;
 		}
 		return false;
+	}
+
+	private void place_item(Sticky_Triple<String> to_insert) {
+		int insert_location = m_trackedElementCount % m_summery.size();
+		Sticky_Triple<String> toRemove = m_summery.get(insert_location);
+		if(toRemove != null)
+			m_lookup.get(toRemove.get_e()).remove(toRemove);
+		
+		m_summery.set(insert_location, to_insert);
 	}
 	
 	// insert several elements into the data structure in the order

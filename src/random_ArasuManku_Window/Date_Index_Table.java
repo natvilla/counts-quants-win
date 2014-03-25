@@ -2,7 +2,6 @@ package random_ArasuManku_Window;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
 /*
  * This table is used to keep track of what indexes are aligned with which time
