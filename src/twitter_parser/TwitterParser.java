@@ -43,7 +43,7 @@ public class TwitterParser {
 		}
 		
 		// get the date
-		DateFormat formatter = new SimpleDateFormat("yyy-MM-dd hh:mm:ss");
+		DateFormat formatter = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
 		try {
 			m_date = (Date)(formatter.parse(split1[1]));
 		} catch (ParseException e) {
