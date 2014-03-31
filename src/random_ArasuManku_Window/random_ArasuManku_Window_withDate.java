@@ -60,8 +60,8 @@ public class random_ArasuManku_Window_withDate extends random_ArasuManku_Window 
 		if(m_dateTable == null)
 			return 0;
 		
-		int lower = m_dateTable.find_lower(startDate);
-		int upper = m_dateTable.find_upper(endDate);
+		int lower = m_dateTable.find_lower_date(startDate);
+		int upper = m_dateTable.find_upper_date(endDate);
 		
 		return this.query(item, lower, upper);
 	}
@@ -69,5 +69,11 @@ public class random_ArasuManku_Window_withDate extends random_ArasuManku_Window 
 	public void dumpDebug()
 	{
 		m_dateTable.dump_all_Recorded_Dates();
+	}
+	
+	public Date get_smallestGuaranteedDate()
+	{
+		int smallest_index = this.get_smallestIValue();
+		return m_dateTable.find_lower_index(smallest_index);
 	}
 }

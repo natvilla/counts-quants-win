@@ -29,25 +29,72 @@ public class Date_Index_Table implements Serializable {
 		m_data.add(new Date_Index_Elem(date, index));
 	}
 	
-	public int find_upper(Date date)
+	public int find_upper_date(Date date)
 	{
-		return m_data.get(this.find(date, true)).m_index;
+		return m_data.get(this.find_date(date, true)).m_index;
 	}
 	
-	public int find_lower(Date date)
+	public int find_lower_date(Date date)
 	{
-		return m_data.get(this.find(date, false)).m_index;
+		return m_data.get(this.find_date(date, false)).m_index;
+	}
+	
+	public Date find_upper_index(int index)
+	{
+		return m_data.get(this.find_index(index, true)).m_date;
+	}
+	
+	public Date find_lower_index(int index)
+	{
+		return m_data.get(this.find_index(index, false)).m_date;		
 	}
 	
 	public void cleanup(Date oldest_new_date)
 	{
-		int index = this.find(oldest_new_date, false);
+		int index = this.find_date(oldest_new_date, false);
 		ArrayList<Date_Index_Elem> new_data = new ArrayList<Date_Index_Elem>(m_data.size());
 		new_data.addAll(index, m_data);
 		m_data = new_data;
 	}
 	
-	private int find(Date date, Boolean upper)
+	/**
+	 * find the index in the data array for the index value provided
+	 * @param index The index to search for
+	 * @param upper true if an upper bound is being searched
+	 * @return
+	 */
+	private int find_index(int index, Boolean upper)
+	{
+		int first = 0;
+		int upto = m_data.size();
+		
+		while(first < upto) {
+			int mid = (first + upto) / 2;
+			if(m_data.get(mid).m_index > index)
+			{
+				upto = mid;
+			}
+			else if (m_data.get(mid).m_index < index)
+			{
+				first = mid + 1;
+			} else {
+				return mid;
+			}
+		}
+		
+		if(upper)
+			return Math.max(first, upto);
+		else
+			return Math.min(first, upto);		
+	}
+	
+	/**
+	 * return the index for the element which is closest to a given date
+	 * @param date the date to search for
+	 * @param upper if you want an upper bound or a lower bound for the searched date
+	 * @return the index to the data structure for the element closest to the date
+	 */
+	private int find_date(Date date, Boolean upper)
 	{
 		int first = 0;
 		int upto = m_data.size();
@@ -62,7 +109,7 @@ public class Date_Index_Table implements Serializable {
 			{
 				first = mid + 1;
 			} else {
-				return m_data.get(mid).m_index;
+				return mid;
 			}
 		}
 		

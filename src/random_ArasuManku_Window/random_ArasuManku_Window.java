@@ -168,6 +168,16 @@ public class random_ArasuManku_Window implements Serializable {
 		return count;
 	}
 	
+	public int get_smallestIValue()
+	{
+		// if the data structure has not overwritten any of the elements, it will be at
+		// index 0.  Otherwise, it will be at the next location which will be overwritten.
+		int index = 0;
+		if(m_trackedElementCount > m_summery.size())
+			index = (m_trackedElementCount + 1) % m_summery.size();
+		return m_summery.get(index).get_i();
+	}
+	
 	public int get_insertedElements()
 	{
 		return m_insertedElements;
