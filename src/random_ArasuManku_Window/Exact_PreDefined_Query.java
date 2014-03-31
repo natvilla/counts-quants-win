@@ -85,5 +85,4 @@ public class Exact_PreDefined_Query {
 	{
 		return m_queryList.iterator();
 	}
-	}
 }
