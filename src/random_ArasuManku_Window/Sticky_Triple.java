@@ -1,4 +1,6 @@
 package random_ArasuManku_Window;
+
+import java.io.Serializable;
 /*
  * Implementation of a skicky triple described in the paper which
  * this implementation is based from
@@ -9,7 +11,9 @@ package random_ArasuManku_Window;
  */
 
 
-public class Sticky_Triple<T> {
+public class Sticky_Triple<T> implements Serializable{
+	/** randomly generated serial UID number **/
+	private static final long serialVersionUID = -726616990674368635L;
 	private final T m_e;
 	private int m_f;
 	private int m_i;

@@ -1,4 +1,4 @@
-package random_ArasuManku_Window;
+package utils;
 
 /**
  * This class is supposed to create a nice clean way to use

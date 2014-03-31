@@ -4,6 +4,7 @@ package random_ArasuManku_Window;
  * section 6 of the paper found at: http://research.microsoft.com/pubs/77611/quantiles.pdf
  */
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -11,7 +12,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class random_ArasuManku_Window {
+public class random_ArasuManku_Window implements Serializable {
+	/** randomly generated serial UID number **/
+	private static final long serialVersionUID = -943983685168737789L;
 	private final int m_W;
 	private final double m_epsilon;
 	private final double m_delta;

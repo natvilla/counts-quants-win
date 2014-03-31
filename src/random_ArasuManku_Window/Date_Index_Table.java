@@ -1,5 +1,6 @@
 package random_ArasuManku_Window;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -12,7 +13,9 @@ import java.util.Date;
  */
 
 
-public class Date_Index_Table {
+public class Date_Index_Table implements Serializable {
+	/** randomly generated serial UID number **/
+	private static final long serialVersionUID = -7224815207611656136L;
 	private ArrayList<Date_Index_Elem> m_data;
 	
 	

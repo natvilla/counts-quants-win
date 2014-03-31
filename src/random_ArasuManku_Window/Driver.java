@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.util.Enumeration;
 import java.util.Scanner;
 
+import com.vladium.utils.ObjectProfiler;
+
 import twitter_parser.TwitterParser;
 
 
@@ -24,6 +26,9 @@ public class Driver {
 				for(String s : tweet_line.get_words())
 					window.insertWDate(s, tweet_line.get_date());
 			}
+			
+			//System.out.println("Size in bytes: " +  ObjectProfiler.sizeof(window));
+			
 			
 			String s_query = "";
 			Scanner in = new Scanner(System.in);

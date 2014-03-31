@@ -12,6 +12,9 @@ import java.util.Date;
  */
 public class random_ArasuManku_Window_withDate extends random_ArasuManku_Window {
 
+	/** randomly generated serial UID number **/
+	private static final long serialVersionUID = -6886353949795093035L;
+
 	Date_Index_Table m_dateTable;
 	
 	Calendar m_nextTimeRecord;
