@@ -22,7 +22,7 @@ import twitter_parser.TwitterParser;
  * date and the word).  At the end One can look at the queries to see what the counts
  * are for those queries.
  */
-public class Exact_PreDefined_Query_Collection {
+public class Exact_PreDefined_Query_Collection implements Iterable<Exact_Period_Count>{
 	Hashtable<String, List<Exact_Period_Count> > m_table;
 	List<Exact_Period_Count> m_queryList;
 	
@@ -77,6 +77,15 @@ public class Exact_PreDefined_Query_Collection {
 	}
 	
 	/**
+	 * return the number of queries registered
+	 * @return
+	 */
+	public int queries_registered()
+	{
+		return m_queryList.size();
+	}
+	
+	/**
 	 * return an iterator of the queries which have been inserted into this data structure.
 	 * The items will be returned in an undefined order.
 	 * @return an iterator over the queries which have been inserted in the data structure.
@@ -84,5 +93,10 @@ public class Exact_PreDefined_Query_Collection {
 	public Iterator<Exact_Period_Count> get_QueryIterator()
 	{
 		return m_queryList.iterator();
+	}
+
+	@Override
+	public Iterator<Exact_Period_Count> iterator() {
+		return get_QueryIterator();
 	}
 }
