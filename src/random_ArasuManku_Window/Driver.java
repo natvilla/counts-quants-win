@@ -1,16 +1,11 @@
 package random_ArasuManku_Window;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Scanner;
-
 import com.vladium.utils.ObjectProfiler;
 
 import twitter_parser.TwitterParser;
@@ -109,18 +104,23 @@ public class Driver {
 		return ret_val;
 	}
 	
-	/*public static int valid_query_count(random_ArasuManku_Window_withDate window)
+	// return the number of queryes in the "exact_queries" data structure which are valid for the
+	// given window
+	public static int valid_query_count(random_ArasuManku_Window_withDate window)
 	{
 		int sum = 0;
 		Date min_q_date = window.get_smallestGuaranteedDate();
 		Date max_q_date = window.get_largestGuaranteedDate();
-		for(Exact_Period_count qry : exact_queries)
+		for(Exact_Period_Count qry : exact_queries)
 		{
-			if(qry.get_minDate().after(min_q_date) && qry.get)
+			if(qry.get_minDate().after(min_q_date) && qry.get_maxDate().before(max_q_date))
+				sum++;
 		}
-	}*/
+		return sum;
+	}
 	
-	public static double average_accuracy(random_ArasuManku_Window_withDate window)
+	// returns the average error for all the valid queries in "exact_queries"
+	public static double average_error(random_ArasuManku_Window_withDate window)
 	{
 		double sum = 0.0;
 		int valid_count = 0;
@@ -147,7 +147,6 @@ public class Driver {
 		int trials     = 1;
 		String filename = "2013-03_clean.txt";
 		BufferedReader reader;
-		String line;
 		
 		StopWatch overhead = new StopWatch();
 		
