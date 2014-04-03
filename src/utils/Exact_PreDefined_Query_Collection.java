@@ -22,11 +22,11 @@ import twitter_parser.TwitterParser;
  * date and the word).  At the end One can look at the queries to see what the counts
  * are for those queries.
  */
-public class Exact_PreDefined_Query {
+public class Exact_PreDefined_Query_Collection {
 	Hashtable<String, List<Exact_Period_Count> > m_table;
 	List<Exact_Period_Count> m_queryList;
 	
-	public Exact_PreDefined_Query() {
+	public Exact_PreDefined_Query_Collection() {
 		m_table = new Hashtable<String, List<Exact_Period_Count> >();
 		m_queryList = new LinkedList<Exact_Period_Count>();
 	}

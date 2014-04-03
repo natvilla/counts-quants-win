@@ -8,18 +8,26 @@ package utils;
  * @author robertc
  *
  */
-public class Timer {
+public class StopWatch {
 	long m_startTime;
 	long m_endTime;
+	long m_sum; // used for the continue option
 	static Double NS_per_S = 1000000000.0;
 	
 	
-	public Timer() {
+	public StopWatch() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	public void start()
 	{
+		reset();
+		m_startTime = System.nanoTime();
+	}
+	
+	public void resume()
+	{
+		m_sum += (m_endTime - m_startTime);
 		m_startTime = System.nanoTime();
 	}
 	
@@ -31,7 +39,12 @@ public class Timer {
 	public Double get_elapsed_Seconds()
 	{
 		// must convert from nanosecond to 
-		return (m_endTime - m_startTime) / NS_per_S;
+		return (m_endTime - m_startTime + m_sum) / NS_per_S;
+	}
+	
+	public void reset()
+	{
+		m_startTime = m_endTime = m_sum = 0;
 	}
 
 }
