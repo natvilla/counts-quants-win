@@ -52,8 +52,10 @@ public class Date_Index_Table implements Serializable {
 	public void cleanup(Date oldest_new_date)
 	{
 		int index = this.find_date(oldest_new_date, false);
-		ArrayList<Date_Index_Elem> new_data = new ArrayList<Date_Index_Elem>(m_data.size());
-		new_data.addAll(index, m_data);
+		ArrayList<Date_Index_Elem> new_data = new ArrayList<Date_Index_Elem>(m_data.size() - index);
+		for(int i=index; i<m_data.size(); i++)
+			new_data.add(m_data.get(i));
+		//new_data.addAll(index, m_data);
 		m_data = new_data;
 	}
 	
@@ -126,5 +128,10 @@ public class Date_Index_Table implements Serializable {
 			if(e != null)
 				System.out.println( "" + e.m_date.toString());
 		}
+	}
+	
+	public Date MostRecentlyInserted()
+	{
+		return m_data.get(m_data.size() - 1).m_date;
 	}
 }

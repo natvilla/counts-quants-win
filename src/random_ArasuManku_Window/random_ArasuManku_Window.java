@@ -97,7 +97,12 @@ public class random_ArasuManku_Window implements Serializable {
 		int insert_location = m_trackedElementCount % m_summery.size();
 		Sticky_Triple<String> toRemove = m_summery.get(insert_location);
 		if(toRemove != null)
+		{
 			m_lookup.get(toRemove.get_e()).remove(toRemove);
+			// if this removed all the entries in the table, remove it from the table
+			if(m_lookup.get(toRemove.get_e()).size() == 0)
+				m_lookup.remove(toRemove.get_e());
+		}
 		
 		m_summery.set(insert_location, to_insert);
 	}
@@ -174,8 +179,13 @@ public class random_ArasuManku_Window implements Serializable {
 		// index 0.  Otherwise, it will be at the next location which will be overwritten.
 		int index = 0;
 		if(m_trackedElementCount > m_summery.size())
-			index = (m_trackedElementCount + 1) % m_summery.size();
+			index = (m_trackedElementCount) % m_summery.size();
 		return m_summery.get(index).get_i();
+	}
+	
+	public int get_largestIValue()
+	{
+		return m_summery.get((m_trackedElementCount - 1) % m_summery.size()).get_i();
 	}
 	
 	public int get_insertedElements()
@@ -186,5 +196,15 @@ public class random_ArasuManku_Window implements Serializable {
 	public Enumeration<String> get_all_tracked()
 	{
 		return m_lookup.keys();
+	}
+	
+	public int get_r()
+	{
+		return m_r;
+	}
+	
+	public int get_blockSize()
+	{
+		return m_blockSize;
 	}
 }

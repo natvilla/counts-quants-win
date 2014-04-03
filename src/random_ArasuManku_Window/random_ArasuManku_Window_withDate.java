@@ -76,4 +76,15 @@ public class random_ArasuManku_Window_withDate extends random_ArasuManku_Window 
 		int smallest_index = this.get_smallestIValue();
 		return m_dateTable.find_lower_index(smallest_index);
 	}
+	
+	public Date get_largestGuaranteedDate()
+	{
+		return m_dateTable.MostRecentlyInserted();
+	}
+	
+	public void garbage_collect_dates()
+	{
+		Date oldest = this.get_smallestGuaranteedDate();
+		m_dateTable.cleanup(oldest);
+	}
 }
