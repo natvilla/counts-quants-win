@@ -109,6 +109,35 @@ public class Driver {
 		return ret_val;
 	}
 	
+	/*public static int valid_query_count(random_ArasuManku_Window_withDate window)
+	{
+		int sum = 0;
+		Date min_q_date = window.get_smallestGuaranteedDate();
+		Date max_q_date = window.get_largestGuaranteedDate();
+		for(Exact_Period_count qry : exact_queries)
+		{
+			if(qry.get_minDate().after(min_q_date) && qry.get)
+		}
+	}*/
+	
+	public static double average_accuracy(random_ArasuManku_Window_withDate window)
+	{
+		double sum = 0.0;
+		int valid_count = 0;
+		Date min_q_date = window.get_smallestGuaranteedDate();
+		Date max_q_date = window.get_largestGuaranteedDate();
+		for(Exact_Period_Count qry : exact_queries)
+		{
+			int exact_count = qry.get_Count();
+			if(qry.get_minDate().before(min_q_date) || qry.get_maxDate().after(max_q_date))
+				continue;
+			int est_count = window.query(qry.get_word(), qry.get_minDate(), qry.get_maxDate());
+			sum += Math.abs(((0.0 + est_count - exact_count) / exact_count));
+			valid_count++;
+		}
+		return sum / valid_count;
+	}
+	
 	public static void VaryWindowSize_timeASize() throws Exception
 	{
 		int WindowSizesToTest[] = {10000, 50000, 100000, 500000, 1000000, 5000000, 10000000};
