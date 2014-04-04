@@ -15,6 +15,8 @@ import utils.StopWatch;
 
 
 public class Driver {
+	private static int trials = 2;
+	
 	public static ArrayList<TwitterParser> buffered_data;
 	
 	public static Exact_PreDefined_Query_Collection exact_queries;
@@ -140,32 +142,26 @@ public class Driver {
 	
 	public static void VaryWindowSize_timeASize() throws Exception
 	{
-		int WindowSizesToTest[] = {10000, 50000, 100000, 500000, 1000000, 5000000, 10000000};
-		double epsilon = 0.001;
-		double delta   = 0.001;
-		int seconds    = 60 * 5; // every five minutes
-		int trials     = 1;
-		String filename = "2013-03_clean.txt";
-		BufferedReader reader;
+		int WindowSizesToTest[] = {10000,
+				                   50000,
+				                   100000,
+				                   500000,
+				                   1000000,
+				                   5000000,
+				                   10000000,
+				                   15000000,
+				                   20000000,
+				                   25000000,
+				                   30000000,
+				                   };
+		double epsilon  = 0.001;
+		double delta    = 0.001;
+		int seconds     = 60 * 5; // every five minutes
+		double accuracy_sum = 0.0;
+		double valid_queries = 0.0;
+		int block_size = 0;
 		
-		StopWatch overhead = new StopWatch();
-		
-		
-		// test the time to read and parse the data
-		reader = new BufferedReader(new FileReader(filename));
-		overhead.start();
-		for(TwitterParser tweet_line : buffered_data)
-		{
-			tweet_line.get_id();
-		}
-		overhead.stop();
-		reader.close();
-		
-		System.out.println("Overhead: " + overhead.get_elapsed_Seconds() + "sec");
-		
-		System.out.print("W\tinserted\traw time\tcorrected time\tsize (bytes)\tLeast recent date\tMost recent date");
-		for(int i=0; i<exact_queries.queries_registered(); i++)
-			System.out.print("\tquery " + i);
+		System.out.print("W\tinserted\traw time\tinst per sec\tsize (bytes)\tLeast recent date\tMost recent date\tvalid exact queries\tavg error\tblock size");
 		
 		System.out.println();
 		
@@ -176,18 +172,17 @@ public class Driver {
 			int size_sum = 0;
 			Date small_date = null;
 			Date large_date = null;
-			String acruacy = "";
+			valid_queries = 0.0; // this should always turn out to be an even number, but we might as well average in case there is a strange condition. 
+			accuracy_sum = 0.0;
 			
 			for(int i=0; i<trials; i++)
 			{
-			reader = new BufferedReader(new FileReader(filename));
 			random_ArasuManku_Window_withDate window = new random_ArasuManku_Window_withDate(W, epsilon, delta, seconds);
 			
+			System.gc();
+
 			time.resume();
-			for(TwitterParser tweet_line : buffered_data)
-				for(String s : tweet_line.get_words())
-					window.insertWDate(s, tweet_line.get_date());
-			
+			fillWithBufferedData(window);
 			time.stop();
 			
 			window.garbage_collect_dates();
@@ -195,49 +190,53 @@ public class Driver {
 			// we will only keep the last entry
 			small_date = window.get_smallestGuaranteedDate();
 			large_date = window.get_largestGuaranteedDate();
-			acruacy = acuracy_of_queries(window);
+			accuracy_sum += average_error(window);
+			valid_queries += valid_query_count(window);
+			block_size = window.get_blockSize();
 			}
 			
 			System.out.println(W + "\t" +
 						        buffered_data.size() + "\t" +
 							   (time.get_elapsed_Seconds() / trials) + "\t" +
-					           ((time.get_elapsed_Seconds() - overhead.get_elapsed_Seconds() * trials) / trials) + "\t" +
+						        (buffered_data.size() / time.get_elapsed_Seconds()) + "\t" +
 							   (size_sum / trials) + "\t" +
 							   small_date + "\t" +
 							   large_date + "\t" +
-							   acruacy);
+							   (valid_queries / trials) + "\t" +
+							   (accuracy_sum / trials) + "\t" +
+							   block_size);
 		}
+	}
+
+	private static void fillWithBufferedData(
+			random_ArasuManku_Window_withDate window) {
+		for(TwitterParser tweet_line : buffered_data)
+			for(String s : tweet_line.get_words())
+				window.insertWDate(s, tweet_line.get_date());
 	}
 	
 	public static void VaryDeltaSize_timeASize() throws Exception
 	{
 		//int WindowSizesToTest[] = {10000, 50000, 100000, 500000, 1000000, 5000000, 10000000};
-		int W = 1000000;
+		int W = 15000000;
 		double epsilon = 0.001;
-		double deltaSizesToTest[]  = {0.5, 0.25, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001};
+		double deltaSizesToTest[]  = {0.5,
+				                      0.25,
+				                      0.1,
+				                      0.05,
+				                      0.01,
+				                      0.005,
+				                      0.001,
+				                      0.0005,
+				                      0.0001,
+				                      0.00005,
+				                      0.000001};
 		int seconds    = 60 * 5; // every five minutes
-		int trials     = 2;
-		String filename = "2013-03_clean.txt";
-		BufferedReader reader;
-		String line;
-			
-		StopWatch overhead = new StopWatch();
-			
-			
-		// test the time to read and parse the data
-		reader = new BufferedReader(new FileReader(filename));
-		overhead.start();
-		while((line = reader.readLine()) != null)
-		{
-			TwitterParser tweet_line = new TwitterParser(line);
-			tweet_line.get_id();
-		}
-		overhead.stop();
-		reader.close();
+		double accuracy_sum = 0.0;
+		double valid_queries = 0.0;
+		int block_size = 0;
 		
-		System.out.println("Overhead: " + overhead.get_elapsed_Seconds() + "sec");
-		
-		System.out.println("delta\traw time\tcorrected time\tsize (bytes)\tLeast recent date\tMost recent date");
+		System.out.println("delta\traw time\tinst per sec\tsize (bytes)\tLeast recent date\tMost recent date\tblock size");
 		
 		for(double delta : deltaSizesToTest)
 		{
@@ -246,66 +245,61 @@ public class Driver {
 			int size_sum = 0;
 			Date small_date = null;
 			Date large_date = null;
+			accuracy_sum = 0.0;
+			valid_queries = 0.0;
 			
 			for(int i=0; i<trials; i++)
 			{
-			reader = new BufferedReader(new FileReader(filename));
 			random_ArasuManku_Window_withDate window = new random_ArasuManku_Window_withDate(W, epsilon, delta, seconds);
-				
+			
+			System.gc();
+			
 			time.resume();
-			while((line = reader.readLine()) != null)
-			{
-				TwitterParser tweet_line = new TwitterParser(line);
-				for(String s : tweet_line.get_words())
-					window.insertWDate(s, tweet_line.get_date());
-			}
+			fillWithBufferedData(window);
 			time.stop();
-				
+			
 			window.garbage_collect_dates();
 			size_sum += ObjectProfiler.sizeof(window);
 			// we will only keep the last entry
 			small_date = window.get_smallestGuaranteedDate();
 			large_date = window.get_largestGuaranteedDate();
+			accuracy_sum += average_error(window);
+			valid_queries += valid_query_count(window);
+			block_size = window.get_blockSize();
 			}
 			
 			System.out.println(delta + "\t" +
 							   (time.get_elapsed_Seconds() / trials) + "\t" +
-					           ((time.get_elapsed_Seconds() - overhead.get_elapsed_Seconds() * trials) / trials) + "\t" +
+						        (buffered_data.size() / time.get_elapsed_Seconds()) + "\t" +
 							   (size_sum / trials) + "\t" +
 							   small_date + "\t" +
-							   large_date);
+							   large_date + "\t" + 
+							   (valid_queries / trials) + "\t" +
+							   (accuracy_sum / trials) + "\t" +
+							   block_size);
 		}
 	}
 
 	public static void VaryEpsilonSize_timeASize() throws Exception
 	{
 		//int WindowSizesToTest[] = {10000, 50000, 100000, 500000, 1000000, 5000000, 10000000};
-		int W = 1000000;
-		double epsilonSizesToTest[] = {0.5, 0.25, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001};
+		int W = 15000000;
+		double epsilonSizesToTest[] = {0.5,
+				                       0.25,
+				                       0.1,
+				                       0.05,
+				                       0.01,
+				                       0.005,
+				                       0.001,
+				                       0.0005,
+				                       0.0001};
 		double delta   = 0.001;
 		int seconds    = 60 * 5; // every five minutes
-		int trials     = 2;
-		String filename = "2013-03_clean.txt";
-		BufferedReader reader;
-		String line;
-			
-		StopWatch overhead = new StopWatch();
-			
-			
-		// test the time to read and parse the data
-		reader = new BufferedReader(new FileReader(filename));
-		overhead.start();
-		while((line = reader.readLine()) != null)
-		{
-			TwitterParser tweet_line = new TwitterParser(line);
-			tweet_line.get_id();
-		}
-		overhead.stop();
-		reader.close();
+		double accuracy_sum = 0.0;
+		double valid_queries = 0.0;
+		int block_size = 0;
 		
-		System.out.println("Overhead: " + overhead.get_elapsed_Seconds() + "sec");
-		
-		System.out.println("epsilon\traw time\tcorrected time\tsize (bytes)\tLeast recent date\tMost recent date");
+		System.out.println("epsilon\traw time\tinst per sec\tsize (bytes)\tLeast recent date\tMost recent date\tblock size");
 		
 		for(double epsilon : epsilonSizesToTest)
 		{
@@ -314,34 +308,38 @@ public class Driver {
 			int size_sum = 0;
 			Date small_date = null;
 			Date large_date = null;
+			accuracy_sum = 0.0;
+			valid_queries = 0.0;
 			
 			for(int i=0; i<trials; i++)
 			{
-			reader = new BufferedReader(new FileReader(filename));
 			random_ArasuManku_Window_withDate window = new random_ArasuManku_Window_withDate(W, epsilon, delta, seconds);
-				
+			
+			System.gc();
+			
 			time.resume();
-			while((line = reader.readLine()) != null)
-			{
-				TwitterParser tweet_line = new TwitterParser(line);
-				for(String s : tweet_line.get_words())
-					window.insertWDate(s, tweet_line.get_date());
-			}
+			fillWithBufferedData(window);
 			time.stop();
-				
+			
 			window.garbage_collect_dates();
 			size_sum += ObjectProfiler.sizeof(window);
 			// we will only keep the last entry
 			small_date = window.get_smallestGuaranteedDate();
 			large_date = window.get_largestGuaranteedDate();
+			accuracy_sum += average_error(window);
+			valid_queries += valid_query_count(window);
+			block_size = window.get_blockSize();
 			}
 			
 			System.out.println(epsilon + "\t" +
 							   (time.get_elapsed_Seconds() / trials) + "\t" +
-					           ((time.get_elapsed_Seconds() - overhead.get_elapsed_Seconds() * trials) / trials) + "\t" +
+						       (buffered_data.size() / time.get_elapsed_Seconds()) + "\t" +
 							   (size_sum / trials) + "\t" +
 							   small_date + "\t" +
-							   large_date);
+							   large_date + "\t" +
+							   (valid_queries / trials) + "\t" +
+							   (accuracy_sum / trials) + "\t" +
+							   block_size);
 		}
 	}	
 	
@@ -350,57 +348,9 @@ public class Driver {
 		
 		VaryWindowSize_timeASize();
 		
-		//VaryDeltaSize_timeASize();
+		VaryDeltaSize_timeASize();
 		
-		//VaryEpsilonSize_timeASize();
-		
-		/*try
-		{
-			int i = 0;
-			BufferedReader reader = new BufferedReader(new FileReader("test.txt"));
-			//random_ArasuManku_Window_withDate window = new random_ArasuManku_Window_withDate(100000, 0.001, 0.0001, 10);
-			String line;
-			while((line = reader.readLine()) != null && i++ < 100)
-			{
-				TwitterParser tweet_line = new TwitterParser(line);
-				System.out.println(tweet_line.get_words());
-				for(String s : tweet_line.get_words())
-					//window.insertWDate(s, tweet_line.get_date());
-			}
-			
-			//System.out.println("Size in bytes: " +  ObjectProfiler.sizeof(window));
-			
-			
-			String s_query = "";
-			Scanner in = new Scanner(System.in);
-			s_query = in.nextLine();
-			while(!s_query.equals("e"))
-			{
-				if(twitter_parser.StopListDictionary.s_query(s_query))
-					System.out.println(" \'" + s_query + "\' : is in the stop list");
-				else if(s_query.equals("--LIST--"))
-				{
-					Enumeration<String> S = window.get_all_tracked();
-					while(S.hasMoreElements())
-						System.out.println(" " + S.nextElement());
-				} else if(s_query.equals("--DATE--"))
-				{
-					window.dumpDebug();
-				}
-				else
-					System.out.println(" \'" + s_query + "\' : " + window.query(s_query, 0, window.get_insertedElements()));
-				
-				s_query = in.nextLine();
-			}
-			
-			in.close();
-			reader.close();
-		}
-		catch(Exception e)
-		{
-			System.err.println("Opps looks like we have a really bad error");
-			e.printStackTrace();
-		}*/
+		VaryEpsilonSize_timeASize();
 
 	}
 
