@@ -78,7 +78,7 @@ public class Driver {
 		    		continue;
 		    	
 		    	exact_queries.update_query(item);
-		    	buffered_data.add(new TwitterParser(line));
+		    	buffered_data.add(item);
 		    }
 		    reader.close();
 		}
