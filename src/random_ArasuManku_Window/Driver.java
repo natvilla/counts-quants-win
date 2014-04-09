@@ -84,6 +84,38 @@ public class Driver {
 		}
 	}
 	
+	public static double timeQuery(random_ArasuManku_Window_withDate window, String q_word, Date q_sdate, Date q_edate)
+	{
+		StopWatch overhead = new StopWatch();
+		StopWatch timer    = new StopWatch();
+		int iterations = 1000;
+		
+		overhead.start();
+		for(int i=0; i<iterations; i++)
+			;
+		overhead.stop();
+		
+		timer.start();
+		for(int i=0; i<iterations; i++)
+			window.query(q_word, q_sdate, q_edate);
+		timer.stop();
+		
+		return (timer.get_elapsed_Seconds() - overhead.get_elapsed_Seconds()) / 1000;
+	}
+	
+	public static double all_predefined_timeQuery(random_ArasuManku_Window_withDate window)
+	{
+		double time = 0.0;
+		int queries_tested = 0;
+		for(Exact_Period_Count qry : exact_queries)
+		{
+			queries_tested++;
+			time += timeQuery(window, qry.get_word(), qry.get_minDate(), qry.get_maxDate());
+		}
+		
+		return time / queries_tested;
+	}
+	
 	// this returns a string (for output to console where each line is the estimated value of the query)
 	// that shows the accuracy of each of the queries.  Each of the values returned is the percent error
 	public static String acuracy_of_queries(random_ArasuManku_Window_withDate query)
@@ -159,9 +191,10 @@ public class Driver {
 		int seconds     = 60 * 5; // every five minutes
 		double accuracy_sum = 0.0;
 		double valid_queries = 0.0;
+		double avg_query_time = 0.0;
 		int block_size = 0;
 		
-		System.out.print("W\tinserted\traw time\tinst per sec\tsize (bytes)\tLeast recent date\tMost recent date\tvalid exact queries\tavg error\tblock size");
+		System.out.print("W\tinserted\traw time\tinst per sec\tsize (bytes)\tLeast recent date\tMost recent date\tvalid exact queries\tavg error\tavg query time\tblock size");
 		
 		System.out.println();
 		
@@ -190,6 +223,7 @@ public class Driver {
 			// we will only keep the last entry
 			small_date = window.get_smallestGuaranteedDate();
 			large_date = window.get_largestGuaranteedDate();
+			avg_query_time = all_predefined_timeQuery(window);
 			accuracy_sum += average_error(window);
 			valid_queries += valid_query_count(window);
 			block_size = window.get_blockSize();
@@ -204,6 +238,7 @@ public class Driver {
 							   large_date + "\t" +
 							   (valid_queries / trials) + "\t" +
 							   (accuracy_sum / trials) + "\t" +
+							   avg_query_time + "\t" +
 							   block_size);
 		}
 	}
@@ -234,9 +269,10 @@ public class Driver {
 		int seconds    = 60 * 5; // every five minutes
 		double accuracy_sum = 0.0;
 		double valid_queries = 0.0;
+		double avg_query_time = 0.0;
 		int block_size = 0;
 		
-		System.out.println("delta\traw time\tinst per sec\tsize (bytes)\tLeast recent date\tMost recent date\tblock size");
+		System.out.println("delta\traw time\tinst per sec\tsize (bytes)\tLeast recent date\tMost recent date\tavg query time\tblock size");
 		
 		for(double delta : deltaSizesToTest)
 		{
@@ -265,6 +301,7 @@ public class Driver {
 			large_date = window.get_largestGuaranteedDate();
 			accuracy_sum += average_error(window);
 			valid_queries += valid_query_count(window);
+			avg_query_time = all_predefined_timeQuery(window);
 			block_size = window.get_blockSize();
 			}
 			
@@ -276,6 +313,7 @@ public class Driver {
 							   large_date + "\t" + 
 							   (valid_queries / trials) + "\t" +
 							   (accuracy_sum / trials) + "\t" +
+							   avg_query_time + "\t" +
 							   block_size);
 		}
 	}
@@ -297,9 +335,10 @@ public class Driver {
 		int seconds    = 60 * 5; // every five minutes
 		double accuracy_sum = 0.0;
 		double valid_queries = 0.0;
+		double avg_query_time = 0.0;
 		int block_size = 0;
 		
-		System.out.println("epsilon\traw time\tinst per sec\tsize (bytes)\tLeast recent date\tMost recent date\tblock size");
+		System.out.println("epsilon\traw time\tinst per sec\tsize (bytes)\tLeast recent date\tMost recent date\tavg query time\tblock size");
 		
 		for(double epsilon : epsilonSizesToTest)
 		{
@@ -328,6 +367,7 @@ public class Driver {
 			large_date = window.get_largestGuaranteedDate();
 			accuracy_sum += average_error(window);
 			valid_queries += valid_query_count(window);
+			avg_query_time = all_predefined_timeQuery(window);
 			block_size = window.get_blockSize();
 			}
 			
@@ -339,6 +379,7 @@ public class Driver {
 							   large_date + "\t" +
 							   (valid_queries / trials) + "\t" +
 							   (accuracy_sum / trials) + "\t" +
+							   avg_query_time + "\t" +
 							   block_size);
 		}
 	}	
